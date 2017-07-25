@@ -329,7 +329,7 @@ def train_cbow_pair(model, word, input_word_indices, l1, alpha, learn_vectors=Tr
 
     if model.negative:
         # use this word (label = 1) + `negative` other random words not from this sentence (label = 0)
-        word_indices = [word.index]
+        word_indices = [word.index] # 这里的word是目标单词
         while len(word_indices) < model.negative + 1:
             w = model.cum_table.searchsorted(model.random.randint(model.cum_table[-1]))
             if w != word.index:
@@ -574,8 +574,11 @@ class Word2Vec(utils.SaveLoad):
         Each sentence must be a list of unicode strings.
 
         """
-        self.scan_vocab(sentences, progress_per=progress_per, trim_rule=trim_rule)  # initial survey
+        # create raw vocabulary(dgl)
+        self.scan_vocab(sentences, progress_per=progress_per, trim_rule=trim_rule)  # initial survey.
+        # refine the raw vocabulary. such as remove the less frequent words. and subsampling (dgl)
         self.scale_vocab(keep_raw_vocab=keep_raw_vocab, trim_rule=trim_rule, update=update)  # trim by min_count & precalculate downsampling
+        #
         self.finalize_vocab(update=update)  # build tables & arrays
 
     def scan_vocab(self, sentences, progress_per=10000, trim_rule=None):
@@ -689,7 +692,7 @@ class Word2Vec(utils.SaveLoad):
 
         # Precalculate each vocabulary item's threshold for sampling
         if not sample:
-            # no words downsampled
+            # no words downsampled(or subsampling,see Mikolov(2))
             threshold_count = retain_total
         elif sample < 1.0:
             # traditional meaning: set parameter as proportion of total
