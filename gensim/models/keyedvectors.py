@@ -112,9 +112,9 @@ class KeyedVectors(utils.SaveLoad):
     involved in training such as most_similar()
     """
     def __init__(self):
-        self.syn0 = []
+        self.syn0 = [] # 输入向量
         self.syn0norm = None
-        self.vocab = {}
+        self.vocab = {} # 词库
         self.index2word = []
         self.vector_size = None
 
